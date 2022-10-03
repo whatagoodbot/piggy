@@ -9,5 +9,5 @@ export default async (query) => {
     return arg.length > 0
   })
   const url = buildUrl('wttr.in', [`${args.join(',')}_q0np.png`]).href
-  return { message: url}
+  return { message: url }
 }
