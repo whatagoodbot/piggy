@@ -56,7 +56,7 @@ broker.client.on('message', async (topic, data) => {
       meta: reshapeMeta(requestPayload)
     })
     if (validatedResponse.errors) throw { message: validatedResponse.errors } // eslint-disable-line
-    broker.client.publish('broadcastMessage', JSON.stringify(validatedResponse))
+    broker.client.publish(`${topicPrefix}broadcastMessage`, JSON.stringify(validatedResponse))
   } catch (error) {
     const validatedResponse = broker.systemError.validate({
       payload: {
