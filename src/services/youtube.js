@@ -8,10 +8,9 @@ export default async (query) => {
         // Deal with Error
         // resolve({ message: await stringsDb.get('youtubeNotFound') })
       }
-      const reply = {message: results[0].link}
+      const reply = { message: results[0].link }
       if (results[0].thumbnails.medium.url) reply.burt = [results[0].thumbnails.medium.url]
       resolve(reply)
     })
   })
 }
-

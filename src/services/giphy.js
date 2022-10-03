@@ -8,12 +8,12 @@ export default async (query) => {
     ['api_key', process.env.GIPHY_API_KEY],
     ['q', query.search],
     ['limit', 1],
-    ['rating', 'g'], 
+    ['rating', 'g'],
     ['lang', 'en']
   ]
 
   const url = buildUrl('api.giphy.com', paths, searchParams)
   const response = await makeRequest(url)
   // Deal with Error
-  return {images: [response?.data[0]?.images?.original?.url]}
+  return { images: [response?.data[0]?.images?.original?.url] }
 }
