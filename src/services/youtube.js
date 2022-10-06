@@ -1,16 +1,14 @@
 import search from 'youtube-search'
 
-export default async (query) => {
-  // Deal with missing params
-  return new Promise(resolve => {
-    search(`${query.song} by ${query.artist}`, { maxResults: 1, key: process.env.YOUTUBE_API_KEY }, async (err, results) => {
+export default async (payload, meta) => {
+  return new Promise((resolve, reject) => {
+    search(`${meta.song} by ${meta.artist}`, { maxResults: 1, key: process.env.YOUTUBE_API_KEY }, async (err, results) => {
       if (err) {
-        // Deal with Error
-        // resolve({ message: await stringsDb.get('youtubeNotFound') })
+        return reject(err)
       }
       const reply = { message: results[0].link }
-      if (results[0].thumbnails.medium.url) reply.burt = [results[0].thumbnails.medium.url]
-      resolve(reply)
+      if (results[0].thumbnails.medium.url) reply.image = results[0].thumbnails.medium.url
+      return resolve(reply)
     })
   })
 }
