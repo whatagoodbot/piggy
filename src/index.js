@@ -1,26 +1,22 @@
 import broker from 'message-broker'
-
+import services from './services/index.js'
 import { logger } from './utils/logging.js'
 import { metrics } from './utils/metrics.js'
-import services from './services/index.js'
+import { performance } from 'perf_hooks'
 
-export const topicPrefix = `${process.env.NODE_ENV}/`
-
-const topics = {
-  externalRequest: {}
-}
+const topicPrefix = `${process.env.NODE_ENV}/`
+const broadcastTopic = 'broadcast'
 
 const subscribe = () => {
-  Object.keys(topics).forEach((topic) => {
-    broker.client.subscribe(`${topicPrefix}${topic}`, (err) => {
-      logger.info(`subscribed to ${topicPrefix}${topic}`)
-      if (err) {
-        logger.error({
-          error: err.toString(),
-          topic
-        })
-      }
-    })
+  const topic = 'externalRequest'
+  broker.client.subscribe(`${topicPrefix}${topic}`, (err) => {
+    logger.info(`subscribed to ${topicPrefix}${topic}`)
+    if (err) {
+      logger.error({
+        error: err.toString(),
+        topic
+      })
+    }
   })
 }
 
@@ -43,30 +39,36 @@ broker.client.on('error', (err) => {
 })
 
 broker.client.on('message', async (topic, data) => {
+  const startTime = performance.now()
   const topicName = topic.substring(topicPrefix.length)
   let requestPayload
+  let reshapedMeta
   try {
     metrics.count('receivedMessage', { topicName })
     requestPayload = JSON.parse(data.toString())
+    reshapedMeta = reshapeMeta(requestPayload)
     const validatedRequest = broker[topicName].validate(requestPayload)
     if (validatedRequest.errors) throw { message: validatedRequest.errors } // eslint-disable-line
-    const serviceResponse = await services[validatedRequest.service](validatedRequest.query)
-    const validatedResponse = broker.broadcastMessage.validate({
-      response: serviceResponse,
-      meta: reshapeMeta(requestPayload)
+    const processedResponse = await services[validatedRequest.service](validatedRequest.query, reshapedMeta)
+    if (!processedResponse) return
+    const validatedResponse = broker[broadcastTopic].validate({
+      response: processedResponse,
+      meta: reshapedMeta
     })
     if (validatedResponse.errors) throw { message: validatedResponse.errors } // eslint-disable-line
-    broker.client.publish(`${topicPrefix}broadcastMessage`, JSON.stringify(validatedResponse))
+
+    broker.client.publish(`${topicPrefix}${broadcastTopic}`, JSON.stringify(validatedResponse))
+
+    metrics.timer('responseTime', performance.now() - startTime, { topic })
   } catch (error) {
-    const validatedResponse = broker.systemError.validate({
-      payload: {
-        errors: error.message,
-        message: 'Uh oh'
-      },
-      meta: reshapeMeta(requestPayload)
+    console.log(error.message)
+    requestPayload.error = error.message
+    const validatedResponse = broker.responseRead.validate({
+      key: 'somethingWentWrong',
+      category: 'system',
+      meta: reshapedMeta
     })
     metrics.count('error', { topicName })
-    // How do we send an error back?
-    broker.client.publish(topics[topicName].replyTopic, JSON.stringify(validatedResponse))
+    broker.client.publish(`${topicPrefix}responseRead`, JSON.stringify(validatedResponse))
   }
 })
