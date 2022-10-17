@@ -4,6 +4,15 @@ const paths = ['v1', 'gifs', 'search']
 
 export default async (payload) => {
   // Deal with missing params
+  if (!payload.search) {
+    return {
+      topic: 'responseRead',
+      payload: {
+        key: 'missingArgumentGiphy',
+        category: 'system'
+      }
+    }
+  }
   const searchParams = [
     ['api_key', process.env.GIPHY_API_KEY],
     ['q', payload.search],
@@ -15,5 +24,5 @@ export default async (payload) => {
   const url = buildUrl('api.giphy.com', paths, searchParams)
   const response = await makeRequest(url)
   // Deal with Error
-  return { image: response?.data[0]?.images?.original?.url }
+  return { payload: { image: response?.data[0]?.images?.original?.url } }
 }

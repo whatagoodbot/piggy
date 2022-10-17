@@ -6,8 +6,8 @@ export default async (payload, meta) => {
       if (err) {
         return reject(err)
       }
-      const reply = { message: results[0].link }
-      if (results[0].thumbnails.medium.url) reply.image = results[0].thumbnails.medium.url
+      const reply = { payload: { message: results[0].link } }
+      if (results[0].thumbnails.medium.url) reply.payload.image = results[0].thumbnails.medium.url
       return resolve(reply)
     })
   })
