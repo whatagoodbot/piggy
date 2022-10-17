@@ -49,20 +49,21 @@ broker.client.on('message', async (topic, data) => {
     reshapedMeta = reshapeMeta(requestPayload)
     const validatedRequest = broker[topicName].validate(requestPayload)
     if (validatedRequest.errors) throw { message: validatedRequest.errors } // eslint-disable-line
-    const processedResponse = await services[validatedRequest.service](validatedRequest.query, reshapedMeta)
+    if (validatedRequest.service !== process.env.npm_package_name) return
+    const processedResponse = await services[validatedRequest.name](validatedRequest.query, reshapedMeta)
     if (!processedResponse) return
-    processedResponse.messageId = reshapedMeta.messageId
-    const validatedResponse = broker[broadcastTopic].validate({
-      response: processedResponse,
+    processedResponse.payload.messageId = reshapedMeta.messageId
+    const replyTopic = processedResponse.topic ?? broadcastTopic
+    const validatedResponse = broker[replyTopic].validate({
+      ...processedResponse.payload,
       meta: reshapedMeta
     })
     if (validatedResponse.errors) throw { message: validatedResponse.errors } // eslint-disable-line
-
-    broker.client.publish(`${topicPrefix}${broadcastTopic}`, JSON.stringify(validatedResponse))
+    broker.client.publish(`${topicPrefix}${replyTopic}`, JSON.stringify(validatedResponse))
 
     metrics.timer('responseTime', performance.now() - startTime, { topic })
   } catch (error) {
-    console.log(error.message)
+    logger.error(error.message)
     requestPayload.error = error.message
     const validatedResponse = broker.responseRead.validate({
       key: 'somethingWentWrong',

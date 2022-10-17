@@ -1,7 +1,15 @@
 import { buildUrl } from '../utils/networking.js'
 
 export default async (payload) => {
-  // Deal with missing params
+  if (!payload.search) {
+    return {
+      topic: 'responseRead',
+      payload: {
+        key: 'missingArgumentWeather',
+        category: 'system'
+      }
+    }
+  }
   payload.search = payload.search.split(' ')
   const args = payload.search.map(arg => {
     return arg.replaceAll(/,/gi, '').replaceAll(/ /gi, '')
@@ -9,5 +17,5 @@ export default async (payload) => {
     return arg.length > 0
   })
   const url = buildUrl('wttr.in', [`${args.join(',')}_q0np.png`]).href
-  return { image: url }
+  return { payload: { image: url } }
 }
