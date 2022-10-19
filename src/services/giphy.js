@@ -2,9 +2,9 @@ import { buildUrl, makeRequest } from '../utils/networking.js'
 
 const paths = ['v1', 'gifs', 'search']
 
-export default async (payload) => {
+export default async (args) => {
   // Deal with missing params
-  if (!payload.search) {
+  if (!args.search) {
     return {
       topic: 'responseRead',
       payload: {
@@ -15,7 +15,7 @@ export default async (payload) => {
   }
   const searchParams = [
     ['api_key', process.env.GIPHY_API_KEY],
-    ['q', payload.search],
+    ['q', args],
     ['limit', 1],
     ['rating', 'g'],
     ['lang', 'en']
