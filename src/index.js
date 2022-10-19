@@ -50,7 +50,7 @@ broker.client.on('message', async (topic, data) => {
     const validatedRequest = broker[topicName].validate(requestPayload)
     if (validatedRequest.errors) throw { message: validatedRequest.errors } // eslint-disable-line
     if (validatedRequest.service !== process.env.npm_package_name) return
-    const processedResponse = await services[validatedRequest.name](validatedRequest.query, reshapedMeta)
+    const processedResponse = await services[validatedRequest.name](validatedRequest.arguments, reshapedMeta)
     if (!processedResponse) return
     processedResponse.payload.messageId = reshapedMeta.messageId
     const replyTopic = processedResponse.topic ?? broadcastTopic
