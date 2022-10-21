@@ -1,6 +1,7 @@
 import { buildUrl } from '../utils/networking.js'
 
-export default async (args) => {
+export default async (payload) => {
+  let args = payload.arguments
   if (!args) {
     return {
       topic: 'responseRead',

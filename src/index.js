@@ -20,12 +20,6 @@ const subscribe = () => {
   })
 }
 
-const reshapeMeta = (requestPayload) => {
-  const sentMeta = requestPayload?.meta
-  delete requestPayload?.meta
-  return { ...requestPayload, ...sentMeta }
-}
-
 if (broker.client.connected) {
   subscribe()
 } else {
@@ -41,22 +35,20 @@ broker.client.on('error', (err) => {
 broker.client.on('message', async (topic, data) => {
   const startTime = performance.now()
   const topicName = topic.substring(topicPrefix.length)
+  logger.debug(`Received ${topic}`)
   metrics.count('receivedMessage', { topicName })
   let requestPayload
-  let reshapedMeta
   try {
     requestPayload = JSON.parse(data.toString())
-    reshapedMeta = reshapeMeta(requestPayload)
     const validatedRequest = broker[topicName].validate(requestPayload)
     if (validatedRequest.errors) throw { message: validatedRequest.errors } // eslint-disable-line
     if (validatedRequest.service !== process.env.npm_package_name) return
-    const processedResponse = await services[validatedRequest.name](validatedRequest.arguments, reshapedMeta)
+    const processedResponse = await services[validatedRequest.name](validatedRequest)
     if (!processedResponse) return
-    processedResponse.payload.messageId = reshapedMeta.messageId
     const replyTopic = processedResponse.topic ?? broadcastTopic
     const validatedResponse = broker[replyTopic].validate({
-      ...processedResponse.payload,
-      meta: reshapedMeta
+      ...validatedRequest,
+      ...processedResponse.payload
     })
     if (validatedResponse.errors) throw { message: validatedResponse.errors } // eslint-disable-line
     broker.client.publish(`${topicPrefix}${replyTopic}`, JSON.stringify(validatedResponse))
@@ -64,11 +56,13 @@ broker.client.on('message', async (topic, data) => {
     metrics.timer('responseTime', performance.now() - startTime, { topic })
   } catch (error) {
     logger.error(error.message)
-    requestPayload.error = error.message
+    requestPayload = requestPayload || {
+      messageId: 'ORPHANED'
+    }
     const validatedResponse = broker.responseRead.validate({
       key: 'somethingWentWrong',
       category: 'system',
-      meta: reshapedMeta
+      ...requestPayload
     })
     metrics.count('error', { topicName })
     broker.client.publish(`${topicPrefix}responseRead`, JSON.stringify(validatedResponse))

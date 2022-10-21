@@ -1,8 +1,8 @@
 import search from 'youtube-search'
 
-export default async (payload, meta) => {
+export default async (payload) => {
   return new Promise((resolve, reject) => {
-    search(`${meta.song} by ${meta.artist}`, { maxResults: 1, key: process.env.YOUTUBE_API_KEY }, async (err, results) => {
+    search(`${payload.nowPlaying.title} by ${payload.nowPlaying.artist}`, { maxResults: 1, key: process.env.YOUTUBE_API_KEY }, async (err, results) => {
       if (err) {
         return reject(err)
       }

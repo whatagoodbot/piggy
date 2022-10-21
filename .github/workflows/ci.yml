@@ -40,4 +40,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: whatagoodbot/piggy:latest,whatagoodbot/piggy:2.0.0
+          tags: whatagoodbot/piggy:latest,whatagoodbot/piggy:3.0.0
