@@ -68,5 +68,3 @@ broker.client.on('message', async (topic, data) => {
     broker.client.publish(`${topicPrefix}responseRead`, JSON.stringify(validatedResponse))
   }
 })
-
-console.log(await services.dog())
