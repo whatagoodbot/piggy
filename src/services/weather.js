@@ -1,13 +1,13 @@
 import { buildUrl } from '../utils/networking.js'
+import { getString } from '../libs/grpc.js'
 
 export default async (payload) => {
   let args = payload.arguments
   if (!args) {
+    const string = await getString('missingArgumentWeather')
     return {
-      topic: 'responseRead',
       payload: {
-        key: 'missingArgumentWeather',
-        category: 'system'
+        message: string.value
       }
     }
   }

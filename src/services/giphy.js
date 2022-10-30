@@ -1,14 +1,14 @@
 import { buildUrl, makeRequest } from '../utils/networking.js'
+import { getString } from '../libs/grpc.js'
 
 const paths = ['v1', 'gifs', 'search']
 
 export default async (payload) => {
   if (!payload.arguments) {
+    const string = await getString('missingArgumentGiphy')
     return {
-      topic: 'responseRead',
       payload: {
-        key: 'missingArgumentGiphy',
-        category: 'system'
+        message: string.value
       }
     }
   }
