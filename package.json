@@ -1,6 +1,6 @@
 {
-  "name": "piggy",
-  "version": "3.0.2",
+  "name": "external-requests",
+  "version": "3.1.0",
   "description": "",
   "main": "index.js",
   "type": "module",
@@ -15,15 +15,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/whatagoodbot/piggy.git"
+    "url": "git+https://github.com/whatagoodbot/service-external-requests.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/whatagoodbot/piggy/issues"
+    "url": "https://github.com/whatagoodbot/service-external-requests/issues"
   },
-  "homepage": "https://github.com/whatagoodbot/piggy#readme",
+  "homepage": "https://github.com/whatagoodbot/service-external-requests#readme",
   "standard": {
     "env": [
       "mocha"
@@ -38,6 +38,7 @@
     "standard": "^17.0.0"
   },
   "dependencies": {
+    "@whatagoodbot/rpc": "^1.0.6",
     "hot-shots": "^9.2.0",
     "message-broker": "github:whatagoodbot/message-broker#v3.0.0",
     "node-fetch": "^3.2.10",
