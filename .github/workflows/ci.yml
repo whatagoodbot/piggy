@@ -40,4 +40,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: whatagoodbot/service-external-requests:latest,whatagoodbot/service-external-requests:3.1.0
+          tags: whatagoodbot/service-external-requests:latest,whatagoodbot/service-external-requests:3.2.0
