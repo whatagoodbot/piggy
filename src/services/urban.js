@@ -26,16 +26,16 @@ export default async (payload) => {
   const term = parsedArgs.join(' ')
 
   // make the call
-  const url = buildUrl('api.urbandictionary.com', ['v0', 'define'], 'term=' + term)
+  const url = buildUrl('api.urbandictionary.com', ['v0', 'define'], [['term', term]])
   const response = await makeRequest(url)
 
   // return definition message
   const definition = response?.list[0]?.definition
   if (definition) {
-    return { payload: { message: term + ': ' + response?.list[0]?.definition } }
+    return { payload: { message: `${term}: ${response?.list[0]?.definition}` } }
   }
 
-  // return errore message
+  // return error message
   const notFoundMessage = await getString('urbanNotFound')
-  return { payload: { message: term + ': ' + notFoundMessage } }
+  return { payload: { message: `${term}: ${notFoundMessage.value}` } }
 }
