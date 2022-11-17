@@ -3,7 +3,7 @@ import { getString } from '../libs/grpc.js'
 
 /**
  * Mention a User with a compliment
- * 
+ *
  * Usage: /compliment @username
  */
 export default async (payload) => {

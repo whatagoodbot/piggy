@@ -3,7 +3,7 @@ import { getString } from '../libs/grpc.js'
 
 /**
  * Get a random motivational quote
- * 
+ *
  * Usage: /inspirational
  */
 export default async (payload) => {
