@@ -10,10 +10,11 @@ import fact from './fact.js'
 import fortune from './fortune.js'
 import fox from './fox.js'
 import geekjoke from './geekjoke.js'
+import inspire from './inspirobot.js'
 import kanye from './kanye.js'
 import meowfact from './meowfact.js'
 import thedonald from './thedonald.js'
-import trbmb from './trbmb.js'
+import thatreally from './trbmb.js'
 import urban from './urban.js'
 
 export default {
@@ -26,12 +27,13 @@ export default {
   fox,
   geekjoke,
   giphy,
+  inspire,
   kanye,
   meowfact,
   randomcoffee,
   urban,
+  thatreally,
   thedonald,
-  trbmb,
   weather,
   yt
 }

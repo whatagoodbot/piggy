@@ -11,6 +11,6 @@ describe('Commands tests', function () {
   this.timeout(5000)
   it('should handle urban command', async () => {
     const response = await urban({ arguments: 'hava' })
-    expect(response).to.have.nested.property('payload.message')
+    expect(response[0]).to.have.nested.property('payload.message')
   })
 })
