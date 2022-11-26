@@ -17,11 +17,12 @@ export default async (payload) => {
   // Check that term has been passed
   if (!args) {
     const string = await clients.strings.get('missingArgumentCompliment')
-    return {
+    return [{
+      topic: 'broadcast',
       payload: {
         message: string.value
       }
-    }
+    }]
   }
 
   // formatting user
@@ -41,7 +42,7 @@ export default async (payload) => {
   const message = response?.compliment
   if (message) {
     metrics.trackExecution(functionName, 'http', performance.now() - startTime, true)
-    return [{ topic: 'broadcast', payload: { message: `@${user} ${message}` } }]
+    return [{ topic: 'broadcast', payload: { message: `${user} ${message}` } }]
   }
 
   // return error message
