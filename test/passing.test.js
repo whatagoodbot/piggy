@@ -18,11 +18,11 @@ describe('Commands tests', function () {
 
   it('should handle compliment command', async () => {
     const response = await compliment({ arguments: 'Wood' })
-    expect(response).to.have.nested.property('payload.message')
+    expect(response[0]).to.have.nested.property('payload.message')
   })
 
   it('should handle inspirational command', async () => {
     const response = await inspirational()
-    expect(response).to.have.nested.property('payload.message')
+    expect(response[0]).to.have.nested.property('payload.message')
   })
 })
