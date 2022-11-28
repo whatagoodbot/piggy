@@ -11,7 +11,7 @@ export default async () => {
     const url = networking.buildUrl('coffee.alexflipnote.dev/random.json')
     const response = await networking.makeRequest(url)
     metrics.trackExecution(functionName, 'http', performance.now() - startTime, true)
-    return [{ topic: 'broadcast', payload: { image: response?.file } }]
+    return [{ topic: 'broadcast', payload: { message: response?.file } }]
   } catch (error) {
     logger.error(error)
     metrics.count('error')
